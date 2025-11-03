@@ -22,11 +22,12 @@ Our goal is to maintain clarity, consistency, and collaboration across all teles
 | Team | Subteams | Description |
 |------|-----------|--------------|
 | **Robotics** | - | Low-level telescope control and hardware integration. |
-| **Software** | `Data Analysis`, `Telescope`, `Website`, `BackEnd` | Main software effort, divided into focused domains. |
+| **Software** | `Data Analysis`, `Telescope`, `Website`, `BackEnd`, `Database` | Main software effort, divided into focused domains. |
 | **`Data Analysis`** | - | Data processing, SDR signal handling, image analysis. |
 | **`Website`** | - | Public-facing static site and web interfaces. |
 | **`BackEnd`** | - | API development, database management, and server-side logic. |
 | **`Telescope`** | - | Telescope's side of Back End integration and control logic. |
+| **`Database`** | - | Database design, management, and query optimization. |
 
 ### Permissions
 - **Write:** All organization members.
@@ -59,4 +60,5 @@ Recommended pages:
 - [Contribution Guide](https://github.com/Astro-BEAM-AUTh/.github/blob/main/CONTRIBUTING.md)
 
 **Document maintained by:** Iraklis Konsoulas (@dyka3773) - Software Team
+
 **Feedback:** Open an issue or PR in the `knowledgebase` repo.
