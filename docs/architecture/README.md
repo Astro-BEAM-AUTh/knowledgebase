@@ -14,8 +14,7 @@
 ### Telescope Control
 | Repository | Description |
 |-------------|-------------|
-| `telescope-manual-control` | Interfaces for manual or local control of telescope motors, sensors, etc. |
-| `telescope-automated-control` | Autonomous control algorithms and consumer of commands from the backend. |
+| `telescope-robotics` | Controls telescope movement and low-level operations. |
 | `telescope-data-handler` | Handles SDR streams, telemetry & commands, and data uploading from the telescope. |
 
 ### Backend & Data

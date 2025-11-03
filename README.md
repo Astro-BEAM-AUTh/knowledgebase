@@ -48,7 +48,7 @@ The `knowledgebase` repo includes:
 ```
 
 Recommended pages:
-- `docs/architecture/readme.md` - high-level system architecture.
+- `docs/architecture/system-architecture/readme.md` - high-level system architecture.
 - `docs/onboarding/developer-setup.md` - new developer guide.
 - `docs/protocols/` - telescope comms, SDR formats, telemetry schema.
 
