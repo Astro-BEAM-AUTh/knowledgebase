@@ -26,10 +26,8 @@
 ### Frontend & Web
 | Repository | Description |
 |-------------|-------------|
-| `web-frontend` | The main web interface for telescope monitoring and data visualization. |
-| `team-website` | Public-facing static site for project info and updates. |
-
-> **Note:** The above may be merged into one repository with the backend in the future, depending on a conversation with the team.
+| `web` | The main website of Astro, written in Angular. (served on astrobeam.gr) |
+| `apps` | Frontend applications for data visualization and user interaction. (served on apps.astrobeam.gr) |
 
 ### Infrastructure & Docs
 | Repository | Description |
