@@ -3,7 +3,7 @@
   "info": {
     "title": "Astro BEAM Backend API",
     "description": "Backend API for the Astro BEAM project",
-    "version": "0.0.0"
+    "version": "0.1.0"
   },
   "paths": {
     "/v1/telescope/observations": {
@@ -28,19 +28,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TelescopeObservationResponse"
+                  "$ref": "#/components/schemas/ObservationRead"
                 }
               }
             }
           },
-          "202": { "description": "Observation request accepted" },
-          "400": { "description": "Bad Request" },
-          "503": { "description": "Telescope service unavailable" },
+          "202": {
+            "description": "Observation request accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "503": {
+            "description": "Telescope service unavailable"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -58,21 +66,34 @@
             "name": "observation_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "title": "Observation Id" }
+            "schema": {
+              "type": "string",
+              "title": "Observation Id"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
-          "204": { "description": "Observation cancelled successfully" },
-          "404": { "description": "Observation not found" },
+          "204": {
+            "description": "Observation cancelled successfully"
+          },
+          "404": {
+            "description": "Observation not found"
+          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
               }
             }
           }
@@ -90,7 +111,9 @@
             "description": "API is healthy",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
               }
             }
           }
@@ -108,7 +131,9 @@
             "description": "System status retrieved successfully",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/StatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
               }
             }
           }
@@ -118,17 +143,26 @@
     "/": {
       "get": {
         "summary": "Root",
-        "description": "Root endpoint.\n\nReturns:\n    dict: Welcome message and API info",
+        "description": "Root endpoint providing basic API information.",
         "operationId": "root__get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "API information retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
-                  "type": "object",
-                  "title": "Response Root  Get"
+                  "$ref": "#/components/schemas/StatusResponse",
+                  "examples": [
+                    {
+                      "status": "success",
+                      "message": "Welcome to Astro BEAM Backend API",
+                      "data": {
+                        "version": "1.0.0",
+                        "docs_url": "/docs",
+                        "redoc_url": "/redoc"
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -139,41 +173,14 @@
   },
   "components": {
     "schemas": {
-      "ApplicationUser": {
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "title": "User Id",
-            "description": "Unique user identifier"
-          },
-          "username": {
-            "type": "string",
-            "title": "Username",
-            "description": "Username of the application user"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email",
-            "description": "Email address of the user"
-          }
-        },
-        "type": "object",
-        "required": ["user_id", "username", "email"],
-        "title": "ApplicationUser",
-        "description": "Model representing an application user.",
-        "example": {
-          "email": "astro_user@example.com",
-          "user_id": "user_12345",
-          "username": "astro_user"
-        }
-      },
       "Body_submit_observation_v1_telescope_observations_post": {
         "properties": {
           "observation": {
-            "$ref": "#/components/schemas/TelescopeObservationRequest"
+            "$ref": "#/components/schemas/ObservationCreate"
           },
-          "requestor": { "$ref": "#/components/schemas/ApplicationUser" }
+          "requestor": {
+            "$ref": "#/components/schemas/UserCreate"
+          }
         },
         "type": "object",
         "required": ["observation", "requestor"],
@@ -182,7 +189,9 @@
       "HTTPValidationError": {
         "properties": {
           "detail": {
-            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
             "type": "array",
             "title": "Detail"
           }
@@ -190,43 +199,27 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "StatusResponse": {
-        "properties": {
-          "status": {
-            "type": "string",
-            "title": "Status",
-            "description": "Status indicator"
-          },
-          "message": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Message",
-            "description": "Optional message"
-          },
-          "data": {
-            "anyOf": [
-              { "additionalProperties": true, "type": "object" },
-              { "type": "null" }
-            ],
-            "title": "Data",
-            "description": "Optional data payload"
-          }
-        },
-        "type": "object",
-        "required": ["status"],
-        "title": "StatusResponse",
-        "description": "Generic status response.",
-        "example": {
-          "data": { "active_observations": 3, "uptime": 86400 },
-          "message": "System is operational",
-          "status": "healthy"
-        }
-      },
-      "TelescopeObservationRequest": {
+      "ObservationCreate": {
         "properties": {
           "target_name": {
             "type": "string",
             "title": "Target Name",
             "description": "Name of the observation target"
+          },
+          "observation_object": {
+            "type": "string",
+            "title": "Observation Object",
+            "description": "Object being observed"
+          },
+          "ra": {
+            "type": "number",
+            "title": "Ra",
+            "description": "Right Ascension in degrees"
+          },
+          "dec": {
+            "type": "number",
+            "title": "Dec",
+            "description": "Declination in degrees"
           },
           "center_frequency": {
             "type": "number",
@@ -258,6 +251,49 @@
             "title": "Integration Time",
             "description": "Integration time in seconds"
           },
+          "output_filename": {
+            "type": "string",
+            "title": "Output Filename",
+            "description": "Filename for the observation data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_name",
+          "observation_object",
+          "ra",
+          "dec",
+          "center_frequency",
+          "rf_gain",
+          "if_gain",
+          "bb_gain",
+          "observation_type",
+          "integration_time",
+          "output_filename"
+        ],
+        "title": "ObservationCreate",
+        "description": "Schema for creating a new observation (API request).",
+        "example": {
+          "bb_gain": 10,
+          "center_frequency": 1400,
+          "dec": 41.26875,
+          "if_gain": 20,
+          "integration_time": 600,
+          "observation_object": "Andromeda Galaxy",
+          "observation_type": "imaging",
+          "output_filename": "m31_observation.fits",
+          "ra": 10.68470833,
+          "rf_gain": 30,
+          "target_name": "M31"
+        }
+      },
+      "ObservationRead": {
+        "properties": {
+          "target_name": {
+            "type": "string",
+            "title": "Target Name",
+            "description": "Name of the observation target"
+          },
           "observation_object": {
             "type": "string",
             "title": "Observation Object",
@@ -273,48 +309,50 @@
             "title": "Dec",
             "description": "Declination in degrees"
           },
+          "center_frequency": {
+            "type": "number",
+            "title": "Center Frequency",
+            "description": "Center frequency in MHz"
+          },
+          "rf_gain": {
+            "type": "number",
+            "title": "Rf Gain",
+            "description": "RF gain in dB"
+          },
+          "if_gain": {
+            "type": "number",
+            "title": "If Gain",
+            "description": "IF gain in dB"
+          },
+          "bb_gain": {
+            "type": "number",
+            "title": "Bb Gain",
+            "description": "Baseband gain in dB"
+          },
+          "observation_type": {
+            "type": "string",
+            "title": "Observation Type",
+            "description": "Type of observation"
+          },
+          "integration_time": {
+            "type": "number",
+            "title": "Integration Time",
+            "description": "Integration time in seconds"
+          },
           "output_filename": {
             "type": "string",
             "title": "Output Filename",
             "description": "Filename for the observation data"
-          }
-        },
-        "type": "object",
-        "required": [
-          "target_name",
-          "center_frequency",
-          "rf_gain",
-          "if_gain",
-          "bb_gain",
-          "observation_type",
-          "integration_time",
-          "observation_object",
-          "ra",
-          "dec",
-          "output_filename"
-        ],
-        "title": "TelescopeObservationRequest",
-        "description": "Request model for telescope observations.",
-        "example": {
-          "bb_gain": 10.0,
-          "center_frequency": 1400.0,
-          "dec": 41.26875,
-          "if_gain": 20.0,
-          "integration_time": 600.0,
-          "observation_object": "Andromeda Galaxy",
-          "observation_type": "imaging",
-          "output_filename": "m31_observation.fits",
-          "ra": 10.68470833,
-          "rf_gain": 30.0,
-          "target_name": "M31"
-        }
-      },
-      "TelescopeObservationResponse": {
-        "properties": {
+          },
           "observation_id": {
             "type": "string",
             "title": "Observation Id",
             "description": "Unique observation identifier"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id",
+            "description": "ID of the user who submitted the observation"
           },
           "status": {
             "type": "string",
@@ -327,32 +365,157 @@
             "title": "Submitted At",
             "description": "Timestamp of submission"
           },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Response message"
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At",
+            "description": "Timestamp of completion"
           }
         },
         "type": "object",
-        "required": ["observation_id", "status", "submitted_at", "message"],
-        "title": "TelescopeObservationResponse",
-        "description": "Response model for telescope observations.",
+        "required": [
+          "target_name",
+          "observation_object",
+          "ra",
+          "dec",
+          "center_frequency",
+          "rf_gain",
+          "if_gain",
+          "bb_gain",
+          "observation_type",
+          "integration_time",
+          "output_filename",
+          "observation_id",
+          "user_id",
+          "status",
+          "submitted_at"
+        ],
+        "title": "ObservationRead",
+        "description": "Schema for reading an observation (API response).",
         "example": {
-          "message": "Observation request submitted successfully",
+          "bb_gain": 10,
+          "center_frequency": 1400,
+          "dec": 41.26875,
+          "if_gain": 20,
+          "integration_time": 600,
           "observation_id": "obs_20231110_001",
+          "observation_object": "Andromeda Galaxy",
+          "observation_type": "imaging",
+          "output_filename": "m31_observation.fits",
+          "ra": 10.68470833,
+          "rf_gain": 30,
           "status": "pending",
-          "submitted_at": "2023-11-10T12:34:56Z"
+          "submitted_at": "2023-11-10T12:34:56Z",
+          "target_name": "M31",
+          "user_id": 42
+        }
+      },
+      "StatusResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Status indicator"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional message"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data",
+            "description": "Optional data payload"
+          }
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "StatusResponse",
+        "description": "Generic status response for health checks and system status.",
+        "example": {
+          "data": {
+            "active_observations": 3,
+            "uptime": 86400
+          },
+          "message": "System is operational",
+          "status": "healthy"
+        }
+      },
+      "UserCreate": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "Unique user identifier"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "Username"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "description": "Email address"
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "username", "email"],
+        "title": "UserCreate",
+        "description": "Schema for creating a new user (API request).",
+        "example": {
+          "email": "astro_user@example.com",
+          "user_id": "user_12345",
+          "username": "astro_user"
         }
       },
       "ValidationError": {
         "properties": {
           "loc": {
-            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
             "type": "array",
             "title": "Location"
           },
-          "msg": { "type": "string", "title": "Message" },
-          "type": { "type": "string", "title": "Error Type" }
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
         },
         "type": "object",
         "required": ["loc", "msg", "type"],
