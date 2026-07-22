@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Page not found · {{ site.short_title }}{% endblock %}
+{% block content %}
+<div class="not-found">
+  <p class="eyebrow">404</p>
+  <h1>That page doesn't exist here</h1>
+  <p>It may have moved, or the repository it came from was renamed. Try searching, or start from the repository directory.</p>
+  <p><a href="{{ prefix }}index.html">Back to the homepage</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+Jinja2==3.1.6
+Markdown==3.10.2
+pymdown-extensions==10.21.2
+Pygments==2.20.0
+PyYAML==6.0.3
+beautifulsoup4==4.14.3

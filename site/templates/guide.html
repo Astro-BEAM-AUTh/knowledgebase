@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · Guides · {{ site.short_title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{ prefix }}index.html">Guides</a>
+  {% for part in page.nav_path %}
+  <span aria-hidden="true">/</span>
+  <span>{{ part.replace('-', ' ').replace('_', ' ')|title }}</span>
+  {% endfor %}
+</nav>
+
+<div class="page-head">
+  <h1>{{ page.title }}</h1>
+  <p class="page-head__meta">
+    <a href="{{ page.source_url }}" target="_blank" rel="noopener">View on GitHub&nbsp;&#8599;</a>
+    {% if page.last_updated %}&middot; last updated {{ page.last_updated|dateformat }}{% endif %}
+  </p>
+  {% if page.siblings %}
+  {% set non_html_siblings = page.siblings|rejectattr('is_html')|list %}
+  {% if non_html_siblings %}
+  <p class="page-head__files">
+    Files in this section:
+    {% for s in non_html_siblings %}<a href="{{ prefix }}{{ s.href }}">{{ s.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+  {% endif %}
+</div>
+
+<article class="markdown-body">
+  {{ page.html | safe }}
+</article>
+
+{% for s in page.siblings if s.is_html %}
+<section class="embed-section">
+  <p class="section-label">{{ s.name }}</p>
+  <iframe class="embed-frame" src="{{ prefix }}{{ s.href }}" height="640" loading="lazy" title="{{ s.name }}"></iframe>
+  <p class="page-head__files"><a href="{{ prefix }}{{ s.href }}" target="_blank" rel="noopener">Open {{ s.name }} in its own tab&nbsp;&#8599;</a></p>
+</section>
+{% endfor %}
+{% endblock %}
+
+{% block right_rail %}
+{% if page.toc_tokens %}
+<aside class="right-rail">
+  <div class="right-rail__section">
+    <p class="right-rail__heading">On this page</p>
+    <nav aria-label="On this page">
+      <ul class="toc">
+        {% for tok in page.toc_tokens %}
+        <li><a href="#{{ tok.id }}">{{ tok.name }}</a>
+          {% if tok.children %}
+          <ul>{% for c in tok.children %}<li><a href="#{{ c.id }}">{{ c.name }}</a></li>{% endfor %}</ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</aside>
+{% endif %}
+{% endblock %}

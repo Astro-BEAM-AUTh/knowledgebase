@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · {{ repo_summary.display_name }} · {{ site.short_title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{ prefix }}index.html">Repositories</a>
+  <span aria-hidden="true">/</span>
+  <a href="{{ prefix }}{{ repo_summary.url }}">{{ repo_summary.display_name }}</a>
+  <span aria-hidden="true">/</span>
+  <span>{{ page.title }}</span>
+</nav>
+
+<div class="page-head">
+  <h1>{{ page.title }}</h1>
+  <p class="page-head__meta">
+    <a href="{{ page.source_url }}" target="_blank" rel="noopener">View on GitHub&nbsp;&#8599;</a>
+    {% if page.last_updated %}&middot; last updated {{ page.last_updated|dateformat }}{% endif %}
+  </p>
+</div>
+
+<article class="markdown-body">
+  {{ page.html | safe }}
+</article>
+{% endblock %}
+
+{% block right_rail %}
+{% if page.toc_tokens %}
+<aside class="right-rail">
+  <div class="right-rail__section">
+    <p class="right-rail__heading">On this page</p>
+    <nav aria-label="On this page">
+      <ul class="toc">
+        {% for tok in page.toc_tokens %}
+        <li><a href="#{{ tok.id }}">{{ tok.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</aside>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}About · {{ site.short_title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{ prefix }}index.html">Home</a>
+  <span aria-hidden="true">/</span>
+  <span>About</span>
+</nav>
+<article class="markdown-body markdown-body--about">
+  {{ about_html | safe }}
+</article>
+<p class="page-footnote">This page mirrors the organization's public profile README (<code>.github/profile/README.md</code>) directly.</p>
+{% endblock %}

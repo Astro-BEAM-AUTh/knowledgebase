@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ site.title }}{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <p class="eyebrow">BEAM &middot; Beyond Earth Aristotle Missions &middot; Aristotle University of Thessaloniki</p>
+  <h1>Docs for the ASTRO radio telescope</h1>
+  <p class="hero__lede">
+    ASTRO is BEAM's 21cm hydrogen-line radio telescope, built and operated by student teams
+    across hardware, backend, data analysis, and web. This site mirrors the README of every
+    public repository in the organization automatically, so the docs never drift from what's
+    actually in each repo.
+  </p>
+  <p class="hero__meta">{{ repo_by_name|length }} repositories tracked &middot; rebuilt on every README change &middot; last build {{ build_time }}</p>
+</section>
+
+{% if diagram_svg %}
+<section class="system-map">
+  <p class="section-label">System map</p>
+  <h2>How the pieces connect</h2>
+  <p class="section-intro">Signal flows left to right: hardware on the dish, through data handling and storage, out to analysis and user-facing tools. Arrows carry the actual dependency, not just a guess &mdash; click any box to open its docs.</p>
+  <div class="system-map__diagram">
+    {{ diagram_svg | safe }}
+  </div>
+  <ul class="system-map__legend">
+    <li><span class="legend-swatch legend-swatch--1"></span>Telescope control</li>
+    <li><span class="legend-swatch legend-swatch--2"></span>Backend &amp; data</li>
+    <li><span class="legend-swatch legend-swatch--3"></span>Analysis &amp; autonomy</li>
+    <li><span class="legend-swatch legend-swatch--4"></span>Frontend &amp; web</li>
+    <li><span class="legend-swatch legend-swatch--5"></span>Infrastructure &amp; docs</li>
+  </ul>
+</section>
+{% endif %}
+
+<section class="guides-overview">
+  <p class="section-label">Guides</p>
+  <h2>Hand-written, not generated</h2>
+  <p class="section-intro">Architecture notes, onboarding steps, and protocol references maintained directly in <code>knowledgebase/docs</code>.</p>
+  <div class="guides-overview__grid">
+    {% for key, node in guide_nav.children.items() %}
+    <a class="guide-card" href="{{ prefix }}{{ node.page.output_path if node.page else (node.children.values()|list)[0].page.output_path }}">
+      <span class="guide-card__title">{{ node.label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="repo-directory">
+  <p class="section-label">Repositories</p>
+  <h2>Every tracked repository</h2>
+  {% for cat in categories %}
+  {% set repos = grouped_repos.get(cat.id, []) %}
+  {% if repos %}
+  <div class="repo-directory__group">
+    <h3>{{ cat.label }}</h3>
+    <p class="repo-directory__blurb">{{ cat.blurb }}</p>
+    <div class="repo-directory__grid">
+      {% for r in repos %}
+      <a class="repo-card" href="{{ prefix }}{{ r.url }}">
+        <div class="repo-card__head">
+          <span class="repo-card__name">{{ r.display_name }}</span>
+          {% if r.archived %}<span class="tag tag--archived">archived</span>{% endif %}
+        </div>
+        {% if r.description %}<p class="repo-card__desc">{{ r.description }}</p>{% endif %}
+        <p class="repo-card__meta">
+          {% if r.branches_shown|length > 1 %}{{ r.branches_shown|length }} branches shown &middot; {% endif %}
+          {% if r.last_updated %}updated {{ r.last_updated|dateformat }}{% endif %}
+        </p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</section>
+
+{% if recent_items %}
+<section class="recent-updates">
+  <p class="section-label">Recently updated</p>
+  <h2>Latest README changes</h2>
+  <ul class="recent-updates__list">
+    {% for item in recent_items %}
+    <li>
+      <a href="{{ prefix }}{{ item.output_path }}">{{ item.title }}</a>
+      <span class="recent-updates__meta">{{ item.last_updated|dateformat }}{% if item.repo %} &middot; {{ item.repo }}{% endif %}{% if item.branch and item.kind == 'repo' and not item.is_default_branch %} &middot; branch <code>{{ item.branch }}</code>{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,11 @@
+# Build output
+dist/
+
+# Local dev cache
+site/.devcache/
+.devcache/
+
+__pycache__/
+*.pyc
+.DS_Store
+.venv/

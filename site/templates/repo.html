@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · {{ site.short_title }}{% endblock %}
+{% block meta_desc %}{{ repo_summary.description or (page.title ~ ' documentation') }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{ prefix }}index.html">Repositories</a>
+  <span aria-hidden="true">/</span>
+  <span>{{ repo_summary.display_name }}</span>
+</nav>
+
+<div class="page-head">
+  <h1>{{ page.title }}{% if repo_summary.archived %} <span class="tag tag--archived">archived</span>{% endif %}</h1>
+  {% if repo_summary.description %}<p class="page-head__desc">{{ repo_summary.description }}</p>{% endif %}
+  <p class="page-head__meta">
+    <a href="{{ page.source_url }}" target="_blank" rel="noopener">View on GitHub&nbsp;&#8599;</a>
+    {% if page.last_updated %}&middot; last updated {{ page.last_updated|dateformat }}{% endif %}
+    {% if repo_summary.extra_pages %}
+      {% for ep in repo_summary.extra_pages %}&middot; <a href="{{ prefix }}{{ ep.output_path }}">{{ ep.title }}</a>{% endfor %}
+    {% endif %}
+  </p>
+
+  {% if branch_pages|length > 1 %}
+  <div class="branch-switcher" role="tablist" aria-label="Branch">
+    {% for bp in branch_pages %}
+    <a role="tab" aria-selected="{{ 'true' if bp.branch == page.branch else 'false' }}"
+       class="branch-chip{% if bp.branch == page.branch %} is-active{% endif %}"
+       href="{{ prefix }}{{ bp.output_path }}">
+      <code>{{ bp.branch }}</code>{% if bp.is_default_branch %}<span class="branch-chip__default">default</span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  <p class="branch-switcher__note">Only branches whose README differs meaningfully from <code>{{ repo_summary.default_branch }}</code> are shown.</p>
+  {% endif %}
+</div>
+
+<article class="markdown-body">
+  {{ page.html | safe }}
+</article>
+{% endblock %}
+
+{% block right_rail %}
+<aside class="right-rail">
+  {% if page.toc_tokens %}
+  <div class="right-rail__section">
+    <p class="right-rail__heading">On this page</p>
+    <nav aria-label="On this page">
+      <ul class="toc">
+        {% for tok in page.toc_tokens %}
+        <li><a href="#{{ tok.id }}">{{ tok.name }}</a>
+          {% if tok.children %}
+          <ul>
+            {% for c in tok.children %}<li><a href="#{{ c.id }}">{{ c.name }}</a></li>{% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+  {% if related %}
+  <div class="right-rail__section">
+    <p class="right-rail__heading">Related repositories</p>
+    <ul class="related-list">
+      {% for r, label in related %}
+      <li>
+        <a href="{{ prefix }}{{ r.url }}">{{ r.display_name }}</a>
+        <span class="related-list__label">{{ label }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</aside>
+{% endblock %}

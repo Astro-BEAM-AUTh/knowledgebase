@@ -1,0 +1,73 @@
+name: Build and deploy knowledgebase
+
+# Three ways this runs:
+#  - schedule: builds every Sunday at 2 AM UTC.
+#  - push to main: so editing config.yml, templates, or CSS here goes
+#     live immediately instead of waiting for the next poll.
+#  - workflow_dispatch: manual "run now" button in the Actions tab.
+
+on:
+  schedule:
+    - cron: '0 2 * * 0'
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/build-deploy.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Graphviz (for the system-map diagram)
+        run: sudo apt-get update -qq && sudo apt-get install -y graphviz
+
+      - name: Install Python dependencies
+        run: pip install -r site/requirements.txt
+
+      - name: Build site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python site/build.py
+
+      - name: Upload build log as artifact (debugging aid)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-manifest
+          path: dist/build-manifest.json
+          retention-days: 14
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

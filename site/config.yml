@@ -1,0 +1,104 @@
+# Configuration for the ASTRO-BEAM-AUTh knowledgebase site generator.
+# This is the one file we should touch as the org's repos evolve.
+# Everything else (which repos exist, which branches exist, README content)
+# is discovered automatically at build time.
+
+organization: Astro-BEAM-AUTh
+
+site:
+  title: "ASTRO-BEAM Knowledgebase"
+  short_title: "ASTRO-BEAM"
+  tagline: "Documentation for the ASTRO radio telescope, pulled straight from every repository's README"
+  # Repo-page URL GitHub Pages will serve this at. Leave as "" so that the build
+  # computes relative links per-page, so it works whether this repo is served
+  # at a root domain or at /knowledgebase/. See README.md "Moving the site".
+  #
+  # Absolute URL the site will be live at, e.g. "https://astro-beam-auth.github.io/knowledgebase" is only used to generate
+  # sitemap.xml (which requires absolute URLs). We leave this blank until we know it; the site itself works fine without this being set.
+  canonical_url: ""
+
+# Repos that exist in the org but should never appear on the site. Private repos are excluded automatically and structurally (the build has no
+# credentials that can see them). This list is only for public repos we want hidden anyway, e.g. because they're deprecated.
+exclude_repos:
+  - ASTRO   # superseded by the per-component repos; see knowledgebase's docs/research-how-tos/migrate-to-organization-repos.md
+
+# Friendlier labels for repos whose slug isn't the nicest display name.
+# Anything not listed here just displays as the repo's own name.
+display_names:
+  .github: "Organization Standards"
+
+# .github is a bad directory name (leading dot), so it gets a clean output slug instead. Every other repo just uses its own name.
+slug_overrides:
+  .github: "org-standards"
+
+# Manual description override, only used if a repo has no GitHub description and we want something better than blank. Most repos already have one.
+description_overrides:
+  reinforcement-learning: "Reinforcement learning for autonomous telescope and solar-tracking control"
+  apps: "Frontend applications for data visualization and user interaction (served on apps.astrobeam.gr)"
+
+# Groupings shown in the sidebar and used to lay out the system-map diagram.
+# Based on the categorisation already in knowledgebase's own docs/architecture/README.md, extended to cover the few repos that table
+# didn't mention yet (data-analysis, optimization, reinforcement-learning, portal). We can adjust freely as the architecture evolves.
+categories:
+  - id: telescope-control
+    label: "Telescope Control"
+    blurb: "Hardware-facing systems that physically operate the dish and radio front end."
+    repos: [telescope-robotics, telescope-data-handler]
+  - id: backend-data
+    label: "Backend & Data"
+    blurb: "Services and schemas that store, move, and serve telescope data."
+    repos: [backend, database]
+  - id: analysis-autonomy
+    label: "Analysis & Autonomy"
+    blurb: "Signal processing, optimization, and learned-control methods applied to telescope data and operation."
+    repos: [data-analysis, optimization, reinforcement-learning]
+  - id: frontend
+    label: "Frontend & Web"
+    blurb: "Public-facing and user-facing applications."
+    repos: [web, apps, portal]
+  - id: infra-docs
+    label: "Infrastructure & Docs"
+    blurb: "Deployment automation and organization-wide documentation and standards."
+    repos: [infrastructure, knowledgebase, ".github"]
+
+# Curated architecture-level relationships, in addition to whatever direct
+# github.com/Astro-BEAM-AUTh/... links the build auto-detects inside each
+# rendered README. label is shown on the "Related" panel.
+relationships:
+  - [telescope-robotics, telescope-data-handler, "shares telemetry and the manual-control link"]
+  - [telescope-data-handler, backend, "streams SDR telemetry and data uploads over Kafka"]
+  - [backend, database, "reads and writes the schema defined here"]
+  - [backend, portal, "serves REST APIs; portal generates its TS client types from backend's OpenAPI spec"]
+  - [backend, apps, "serves the data APIs apps visualizes"]
+  - [data-analysis, optimization, "optimization work targets this pipeline's CPU/GPU-bound steps"]
+  - [data-analysis, backend, "consumes stored observation data"]
+  - [infrastructure, portal, "provides the deploy-and-release workflow (Angular to GitHub Pages)"]
+  - [infrastructure, web, "provides the deploy-and-release workflow (Angular to GitHub Pages)"]
+  - [infrastructure, apps, "provides the deploy-and-release workflow (Angular to GitHub Pages)"]
+
+# Files besides a repo's root README worth mirroring as their own page. Configured by hand during setup, we can add more as we notice them.
+# (knowledgebase is handled separately below, its whole docs/ tree is mirrored.)
+extra_tracked_paths:
+  backend:
+    - path: migrations/README.md
+      title: "Database Migrations"
+
+# The knowledgebase repo's docs/ tree is treated as hand-authored guide content rather than a mirrored README: every .md file under this path is
+# rendered, preserving its folder structure as the "Guides" nav section.
+guides_source:
+  repo: knowledgebase
+  path: docs
+
+# Branches policy: a non-default branch only gets its own page if its tracked file's content actually differs from the default branch's version
+# (beyond trivial whitespace). This keeps e.g. 10 stale dependabot branches from cluttering the branch switcher, while still surfacing real
+# in-progress docs like data-analysis's feature/gpr and feature/ica.
+branch_display:
+  exclude_patterns:
+    - "^dependabot/"
+    - "^renovate/"
+  diff_threshold_chars: 40
+  max_branches_shown: 8
+
+# data-analysis:feature/gpr uses inline $...$ LaTeX
+# Turns on KaTeX auto-render in the page template.
+math: true
